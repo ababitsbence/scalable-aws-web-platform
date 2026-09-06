@@ -39,11 +39,12 @@ resource "aws_security_group" "app" {
   }
 
   ingress {
-    description = "HTTP from within the VPC (NLB traffic)"
+    description = "HTTP from NLB"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [data.aws_vpc.selected.cidr_block]
+
+    security_groups = [aws_security_group.nlb.id]
   }
 
   egress {
@@ -77,4 +78,29 @@ resource "aws_security_group" "db" {
   }
 
   tags = { Name = "${var.project_name}-db-sg" }
+}
+
+resource "aws_security_group" "nlb" {
+  name        = "${var.project_name}-nlb-sg"
+  description = "Allows public HTTP access to the Network Load Balancer"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Public HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-nlb-sg"
+  }
 }
