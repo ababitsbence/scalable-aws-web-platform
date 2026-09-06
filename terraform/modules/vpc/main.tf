@@ -18,7 +18,6 @@ resource "aws_internet_gateway" "igw" {
   tags   = { Name = "${var.project_name}-igw" }
 }
 
-# --- Public subnets (NLB + bastion) ---
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
@@ -28,7 +27,6 @@ resource "aws_subnet" "public" {
   tags                    = { Name = "${var.project_name}-public-${local.azs[count.index]}" }
 }
 
-# --- App subnets (private, need NAT for ECR pulls) ---
 resource "aws_subnet" "app" {
   count             = length(var.app_subnet_cidrs)
   vpc_id            = aws_vpc.main.id
@@ -37,7 +35,6 @@ resource "aws_subnet" "app" {
   tags              = { Name = "${var.project_name}-app-${count.index}" }
 }
 
-# --- DB subnets (private, no internet route at all) ---
 resource "aws_subnet" "db" {
   count             = length(var.db_subnet_cidrs)
   vpc_id            = aws_vpc.main.id
@@ -46,7 +43,6 @@ resource "aws_subnet" "db" {
   tags              = { Name = "${var.project_name}-db-${count.index}" }
 }
 
-# --- NAT Gateway (single, cost-optimized) ---
 resource "aws_eip" "nat" {
   domain = "vpc"
   tags   = { Name = "${var.project_name}-nat-eip" }
@@ -59,7 +55,6 @@ resource "aws_nat_gateway" "nat" {
   depends_on    = [aws_internet_gateway.igw]
 }
 
-# --- Route tables ---
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   route {
@@ -80,7 +75,7 @@ resource "aws_route_table" "app" {
 
 resource "aws_route_table" "db" {
   vpc_id = aws_vpc.main.id
-  tags   = { Name = "${var.project_name}-db-rt" } # no default route: fully isolated
+  tags   = { Name = "${var.project_name}-db-rt" }
 }
 
 resource "aws_route_table_association" "public" {
