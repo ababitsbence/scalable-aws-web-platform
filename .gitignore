@@ -3,7 +3,7 @@
 *.tfstate.*
 *.tfvars
 !terraform.tfvars.example
-.terraform.lock.hcl
+bastion-key*
 *.pem
 node_modules/
 .DS_Store
