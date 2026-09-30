@@ -1,5 +1,7 @@
 # Scalable AWS Web Platform
 
+[![Terraform CI](https://github.com/ababitsbence/scalable-aws-web-platform/actions/workflows/terraform-ci.yml/badge.svg)](https://github.com/ababitsbence/scalable-aws-web-platform/actions/workflows/terraform-ci.yml)
+
 A production-style AWS infrastructure project built entirely in Terraform: a VPC with public and private tiers, a load-balanced and auto-scaled application layer, a bastion host for controlled SSH access, and a container registry, all wired together with least-privilege security groups and IAM roles.
 
 ## About The Project
@@ -121,7 +123,7 @@ terraform fmt -check
 terraform validate
 ```
 
-> A CI pipeline running these checks automatically on every push is on the roadmap below.
+These same checks, plus TFLint and a Checkov security scan, run automatically on every push via [GitHub Actions](.github/workflows/terraform-ci.yml).
 
 ## Project Structure
 
@@ -147,7 +149,6 @@ scalable-aws-web-platform/
 
 ## Roadmap / Future Improvements
 
-- [ ] CI pipeline running `terraform fmt -check`, `terraform validate`, and a security scanner (`tflint`/`checkov`) on every push
 - [ ] Automated image build-and-push step, rather than the manual Docker steps above
 - [ ] NAT Gateway per availability zone, instead of a single shared one, for higher availability
 - [ ] Automated tests for the sample application
