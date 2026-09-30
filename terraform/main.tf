@@ -1,6 +1,16 @@
+resource "tls_private_key" "bastion" {
+  algorithm = "ED25519"
+}
+
 resource "aws_key_pair" "bastion" {
   key_name   = "${var.project_name}-key"
-  public_key = file("${path.module}/bastion-key.pub")
+  public_key = tls_private_key.bastion.public_key_openssh
+}
+
+resource "local_sensitive_file" "bastion_private_key" {
+  content         = tls_private_key.bastion.private_key_openssh
+  filename        = "${path.module}/bastion-key"
+  file_permission = "0600"
 }
 
 module "ecr" {

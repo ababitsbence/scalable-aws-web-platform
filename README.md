@@ -60,15 +60,9 @@ Fill in your own values:
 | `aws_region` | Defaults to `eu-west-3`, override if you want a different region |
 | `instance_type` | Defaults to `t3.micro` |
 
-### 2. Generate a key pair for the bastion
+### 2. SSH key pair
 
-Terraform expects an existing key pair in this folder, it does not generate one for you:
-
-```bash
-ssh-keygen -t ed25519 -f bastion-key -N ""
-```
-
-This creates `bastion-key` (private, keep it out of version control, already gitignored) and `bastion-key.pub` (public, read directly by Terraform).
+Terraform generates a dedicated ED25519 key pair for bastion access automatically as part of `terraform apply`, the private key is written to `terraform/bastion-key` (gitignored, never committed). No manual key generation is needed.
 
 ### 3. Create the ECR repository first
 
