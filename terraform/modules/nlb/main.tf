@@ -36,9 +36,9 @@ resource "aws_lb" "app" {
   name               = "${var.project_name}-nlb"
   internal           = false
   load_balancer_type = "network"
+  enable_cross_zone_load_balancing = true
 
   subnets = var.public_subnet_ids
-
   security_groups = [var.nlb_sg_id]
 
   tags = {

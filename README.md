@@ -121,11 +121,14 @@ These same checks, plus TFLint and a Checkov security scan, run automatically on
 
 ## Security Scan Findings
 
-Checkov runs on every push (see CI badge above). Three findings are intentional design decisions rather than gaps:
+Checkov runs on every push (see CI badge above). These findings are intentional design decisions rather than gaps:
 
 - **Bastion has a public IP** (`CKV_AWS_88`): required for its role as the sole SSH entry point, access is restricted to a single admin IP via security groups.
 - **ECR tags are mutable** (`CKV_AWS_51`): the current deploy model pulls `:latest` at boot. Switching to immutable, versioned tags with an ASG instance refresh for rollout is on the roadmap.
 - **Detailed EC2 monitoring is disabled** (`CKV_AWS_126`): a cost tradeoff appropriate for a project torn down between uses via `terraform destroy`.
+- **Load balancer deletion protection is disabled** (`CKV_AWS_150`): intentionally, so `terraform destroy` works without a manual unlock step.
+- **Security group egress is unrestricted** (`CKV_AWS_382`): a common simplification; a stricter, explicit egress allowlist is on the roadmap.
+- **ECR uses AWS-managed encryption, not a customer-managed KMS key** (`CKV_AWS_136`): default encryption at rest already applies; a CMK is an optional hardening step with added operational overhead.
 
 ## Project Structure
 
@@ -151,6 +154,8 @@ scalable-aws-web-platform/
 
 ## Roadmap / Future Improvements
 
+- [ ] NLB access logging to S3 (`CKV_AWS_91`)
+- [ ] Explicit, restrictive egress rules instead of allow-all (`CKV_AWS_382`)
 - [ ] Automated image build-and-push step, rather than the manual Docker steps above
 - [ ] NAT Gateway per availability zone, instead of a single shared one, for higher availability
 - [ ] Automated tests for the sample application

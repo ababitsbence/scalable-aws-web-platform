@@ -70,3 +70,4 @@ jobs:
           directory: terraform
           quiet: true
           soft_fail: true
+          version: 3.3.21
