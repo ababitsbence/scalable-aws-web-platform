@@ -119,6 +119,14 @@ terraform validate
 
 These same checks, plus TFLint and a Checkov security scan, run automatically on every push via [GitHub Actions](.github/workflows/terraform-ci.yml).
 
+## Security Scan Findings
+
+Checkov runs on every push (see CI badge above). Three findings are intentional design decisions rather than gaps:
+
+- **Bastion has a public IP** (`CKV_AWS_88`): required for its role as the sole SSH entry point, access is restricted to a single admin IP via security groups.
+- **ECR tags are mutable** (`CKV_AWS_51`): the current deploy model pulls `:latest` at boot. Switching to immutable, versioned tags with an ASG instance refresh for rollout is on the roadmap.
+- **Detailed EC2 monitoring is disabled** (`CKV_AWS_126`): a cost tradeoff appropriate for a project torn down between uses via `terraform destroy`.
+
 ## Project Structure
 
 ```

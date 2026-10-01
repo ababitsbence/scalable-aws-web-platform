@@ -36,6 +36,14 @@ module "iam" {
   project_name = var.project_name
 }
 
+module "nlb" {
+  source            = "./modules/nlb"
+  project_name      = var.project_name
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+  nlb_sg_id         = module.security.nlb_sg_id
+}
+
 module "compute" {
   source                = "./modules/compute"
   project_name          = var.project_name
@@ -46,16 +54,10 @@ module "compute" {
   ecr_image_url         = "${module.ecr.repository_url}:latest"
   instance_type         = var.instance_type
   key_name              = aws_key_pair.bastion.key_name
-}
-
-module "nlb" {
-  source            = "./modules/nlb"
-  project_name      = var.project_name
-  vpc_id            = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  app_server_ids    = module.compute.app_server_ids
-  app_sg_id         = module.security.app_sg_id
-  nlb_sg_id         = module.security.nlb_sg_id
+  target_group_arn      = module.nlb.target_group_arn
+  min_size              = var.min_size
+  max_size              = var.max_size
+  desired_capacity      = var.desired_capacity
 }
 
 module "bastion" {
