@@ -13,6 +13,11 @@ resource "aws_vpc" "main" {
   tags                 = { Name = "${var.project_name}-vpc" }
 }
 
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+  # Intentionally no ingress/egress rules: denies all traffic by default
+}
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
   tags   = { Name = "${var.project_name}-igw" }

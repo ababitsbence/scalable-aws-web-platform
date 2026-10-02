@@ -1,7 +1,7 @@
-output "app_server_ids" {
-  value = aws_instance.app_server[*].id
+output "autoscaling_group_name" {
+  value = aws_autoscaling_group.app.name
 }
 
-output "app_server_private_ips" {
-  value = aws_instance.app_server[*].private_ip
+output "launch_template_id" {
+  value = aws_launch_template.app.id
 }

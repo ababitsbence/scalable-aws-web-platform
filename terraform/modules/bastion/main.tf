@@ -18,8 +18,18 @@ resource "aws_instance" "bastion" {
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]
+  ebs_optimized          = true
 
   associate_public_ip_address = true
+
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
 
   key_name = var.key_name
 

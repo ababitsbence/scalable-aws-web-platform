@@ -21,14 +21,6 @@ resource "aws_lb_target_group" "app" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "app" {
-  count = length(var.app_server_ids)
-
-  target_group_arn = aws_lb_target_group.app.arn
-  target_id        = var.app_server_ids[count.index]
-  port             = 80
-}
-
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.app.arn
   port              = 80
@@ -41,12 +33,12 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb" "app" {
-  name               = "${var.project_name}-nlb"
-  internal           = false
-  load_balancer_type = "network"
+  name                             = "${var.project_name}-nlb"
+  internal                         = false
+  load_balancer_type               = "network"
+  enable_cross_zone_load_balancing = true
 
-  subnets = var.public_subnet_ids
-
+  subnets         = var.public_subnet_ids
   security_groups = [var.nlb_sg_id]
 
   tags = {

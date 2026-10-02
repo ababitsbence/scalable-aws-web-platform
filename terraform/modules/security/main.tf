@@ -16,6 +16,7 @@ resource "aws_security_group" "bastion" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -39,15 +40,15 @@ resource "aws_security_group" "app" {
   }
 
   ingress {
-    description = "HTTP from NLB"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-
+    description     = "HTTP from NLB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     security_groups = [aws_security_group.nlb.id]
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -57,6 +58,7 @@ resource "aws_security_group" "app" {
   tags = { Name = "${var.project_name}-app-sg" }
 }
 
+#checkov:skip=CKV2_AWS_5:Reserved for a future RDS instance, not yet provisioned
 resource "aws_security_group" "db" {
   name        = "${var.project_name}-db-sg"
   description = "Allows DB traffic from app servers only"
@@ -71,6 +73,7 @@ resource "aws_security_group" "db" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -94,6 +97,7 @@ resource "aws_security_group" "nlb" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"

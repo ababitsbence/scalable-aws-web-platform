@@ -1,6 +1,6 @@
 project_name  = "your-project-name"
 ecr_repo_name = "your-ecr-repo-name"
-admin_ip      = ["YOUR.IP.ADDRESS.HERE/32"]
+admin_ip      = ["203.0.113.10/32"]
 
 # Optional overrides (defaults shown):
 # aws_region    = "eu-west-3"
