@@ -121,14 +121,22 @@ These same checks, plus TFLint and a Checkov security scan, run automatically on
 
 ## Security Scan Findings
 
-Checkov runs on every push (see CI badge above). These findings are intentional design decisions rather than gaps:
+Checkov runs on every push (see CI badge above), scoped against `terraform.tfvars.example` so variable-dependent checks resolve correctly. 22 findings remain, all reviewed:
 
+**Intentional design decisions:**
 - **Bastion has a public IP** (`CKV_AWS_88`): required for its role as the sole SSH entry point, access is restricted to a single admin IP via security groups.
+- **Bastion has no IAM role** (`CKV2_AWS_41`): it needs no AWS API access; attaching one would violate least-privilege rather than improve it.
+- **NLB is reachable on plain HTTP** (`CKV_AWS_260`): the intended entry point for this project's sample workload; HTTPS requires a domain and ACM certificate, see roadmap.
+- **Public subnets auto-assign public IPs** (`CKV_AWS_130`): required for the bastion and NAT gateway to function.
 - **ECR tags are mutable** (`CKV_AWS_51`): the current deploy model pulls `:latest` at boot. Switching to immutable, versioned tags with an ASG instance refresh for rollout is on the roadmap.
 - **Detailed EC2 monitoring is disabled** (`CKV_AWS_126`): a cost tradeoff appropriate for a project torn down between uses via `terraform destroy`.
 - **Load balancer deletion protection is disabled** (`CKV_AWS_150`): intentionally, so `terraform destroy` works without a manual unlock step.
 - **Security group egress is unrestricted** (`CKV_AWS_382`): a common simplification; a stricter, explicit egress allowlist is on the roadmap.
 - **ECR uses AWS-managed encryption, not a customer-managed KMS key** (`CKV_AWS_136`): default encryption at rest already applies; a CMK is an optional hardening step with added operational overhead.
+- **The `db` security group has no attached resource** (`CKV2_AWS_5`, explicitly skipped inline): reserved for a future RDS instance, not yet provisioned.
+
+**Scanner limitations, not real issues:**
+- **`CKV2_AWS_5` on `bastion`, `app`, and `nlb`**: each is genuinely attached via a module-passed security group ID, Checkov's static analysis doesn't trace attachment across module boundaries in this version.
 
 ## Project Structure
 
@@ -154,6 +162,8 @@ scalable-aws-web-platform/
 
 ## Roadmap / Future Improvements
 
+- [ ] HTTPS via ACM certificate and HTTP→HTTPS redirect (`CKV2_AWS_20`)
+- [ ] VPC flow logging to CloudWatch (`CKV2_AWS_11`)
 - [ ] NLB access logging to S3 (`CKV_AWS_91`)
 - [ ] Explicit, restrictive egress rules instead of allow-all (`CKV_AWS_382`)
 - [ ] Automated image build-and-push step, rather than the manual Docker steps above
